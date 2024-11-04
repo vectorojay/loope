@@ -6,11 +6,25 @@ import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const login = useGoogleLogin({
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       console.log(response);
-    },
-    onError: (error) => {
-      console.log(error);
+      const accessToken = response.access_token;
+      if (accessToken) {
+        try {
+          const res = await fetch(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          const profile = await res.json();
+          console.log(profile);
+        } catch (error) {
+          console.error(error);
+        }
+      }
     },
   });
 
