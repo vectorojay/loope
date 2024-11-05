@@ -21,8 +21,24 @@ const Login = () => {
           );
           const profile = await res.json();
           console.log(profile);
+
+          localStorage.setItem("user", JSON.stringify(profile));
+
+          //TODO Check if it exists and if it is authenticated
+
+          const { name, sub, picture } = profile;
+
+          //if profile exist
+
+          const doc = {
+            _id: sub,
+            _type: "user",
+            userName: name,
+            image: picture,
+          };
         } catch (error) {
           console.error(error);
+ 
         }
       }
     },
@@ -53,20 +69,11 @@ const Login = () => {
             Create. Share. Loope
           </span>
           <div className="shadow-2xl">
-            {/* <GoogleLogin
-              style={{
-                backgroundColor: "#4285f4",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                padding: "10px 20px",
-                fontSize: "16px",
-                cursor: "pointer",
-                width: "10px !important",
-              }}
-              onSuccess={successMessage}
-              onError={errorMessage}
-            /> */}
+            <GoogleLogin
+              size="small"
+              // onSuccess={successMessage}
+              // onError={errorMessage}
+            />
             <button
               onClick={() => login()}
               className="flex justify-center items-center p-3 mr-80 mt-6 bg-mainColor rounded-lg cursor-pointer outline-none"
