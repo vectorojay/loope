@@ -3,8 +3,11 @@ import { FcGoogle } from "react-icons/fc";
 import loopeVideo from "../assets/loopevid.mp4";
 import logo from "../assets/loopelogo.png";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { client } from "../client";
+import { replace, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const login = useGoogleLogin({
     onSuccess: async (response) => {
       console.log(response);
@@ -36,9 +39,13 @@ const Login = () => {
             userName: name,
             image: picture,
           };
+
+          //create a new doc, if it doesn't already exist, and navigate to home page thereafter
+          client.createIfNotExists(doc).then(() => {
+            navigate("/", { replace: true }); //replace the current entry in the browser's history stack instead of adding a new one. This prevents the user from going "back" to the page where this code was triggered when they click the back button in their browser.
+          });
         } catch (error) {
           console.error(error);
- 
         }
       }
     },
