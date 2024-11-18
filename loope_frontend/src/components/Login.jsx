@@ -31,8 +31,6 @@ const Login = () => {
 
           const { name, sub, picture } = profile;
 
-          //if profile exist
-
           const doc = {
             _id: sub,
             _type: "user",
@@ -76,11 +74,11 @@ const Login = () => {
             Create. Share. Loope
           </span>
           <div className="shadow-2xl">
-            <GoogleLogin
+            {/* <GoogleLogin
               size="small"
               // onSuccess={successMessage}
               // onError={errorMessage}
-            />
+            /> */}
             <button
               onClick={() => login()}
               className="flex justify-center items-center p-3 mr-80 mt-6 bg-mainColor rounded-lg cursor-pointer outline-none"
