@@ -6,32 +6,79 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import { Sidebar, UserProfile } from "../components";
 import { client } from "../client";
 import Pins from "./Pins";
+import { userQuery } from "../utils/data";
 
 const Home = () => {
   const [toggleSidebar, setToggleSidebar] = useState(false);
+  const [user, setUser] = useState(null);
+  const scrollRef = useRef(null);
+
   const userInfo =
     localStorage.getItem("user") !== "undefined"
       ? JSON.parse(localStorage.getItem("user"))
       : localStorage.clear();
 
-  useEffect(() => {}, []);
+  console.log(userInfo);
+
+  useEffect(() => {
+    const query = userQuery(userInfo?.sub);
+    console.log(query);
+
+    client.fetch(query).then((data) => {
+      setUser(data[0]);
+      console.log(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    scrollRef.current.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="flex bg-gray-50 md:flex-row flex-col h-screen transition-height duration-75 ease-out">
       <div className="hidden md:flex h-screen flex-initial">
-        <Sidebar />
+        <Sidebar user={user && user} />
       </div>
       <div className="flex md:hidden flex-row">
-        <HiMenu
-          fontSize={40}
-          className="cursor-pointer"
-          onClick={() => setToggleSidebar(false)}
-        />
-        <Link to="/">
-          <span className="text-3xl before:block before:absolute before:-inset-1 before:-skew-y-3 before:bg-yellow-500 relative inline-block px-2">
-            <span className="relative text-white">o</span>
-          </span>
-        </Link>
-        <Link to={`user-profile/${user?._id}`}></Link>
+        <div className="p-2 w-full flex flex-row justify-between items-center shadow-md">
+          <HiMenu
+            fontSize={40}
+            className="cursor-pointer"
+            onClick={() => setToggleSidebar(true)}
+          />
+          <Link to="/">
+            <span className="text-3xl before:block before:absolute before:-inset-1 before:-skew-y-3 before:bg-yellow-500 relative inline-block px-2">
+              <span className="relative text-white">o</span>
+            </span>
+          </Link>
+          <Link to={`user-profile/${user?._id}`}>
+            <img
+              className="w-10 rounded-full"
+              src={user?.image}
+              alt="user-image"
+            />
+          </Link>
+        </div>
+        {toggleSidebar && (
+          <div className="fixed w-4/5 bg-white h-screen overflow y-auto shadow-md z-10 animate-slide-in">
+            <div className="absolute w-full flex justify-end items-center p-2">
+              <AiFillCloseCircle
+                fontSize={30}
+                className="cursor-pointer"
+                onClick={() => {
+                  setToggleSidebar(false);
+                }}
+              />
+            </div>
+            <Sidebar user={user && user} closeToggle={setToggleSidebar} />
+          </div>
+        )}
+      </div>
+      <div className="pb-2 flex-1 h-screen overflow-y-scroll" ref={scrollRef}>
+        <Routes>
+          <Route path="/user-profile/:user-id" element={<UserProfile />} />
+          <Route path="/*" element={<Pins user={user && user} />} />
+        </Routes>
       </div>
     </div>
   );
